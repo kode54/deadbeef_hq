@@ -530,10 +530,10 @@ hq_seek_sample (DB_fileinfo_t *_info, int sample) {
 
         if(info->key_size == 11) {
             uint8_t * ptr = info->key;
-            uint32_t swap_key1 = *( uint32_t * )( ptr +  0 );
-            uint32_t swap_key2 = *( uint32_t * )( ptr +  4 );
-            uint32_t addr_key  = *( uint16_t * )( ptr +  8 );
-            uint8_t  xor_key   =               *( ptr + 10 );
+            uint32_t swap_key1 = get_be32( ptr +  0 );
+            uint32_t swap_key2 = get_be32( ptr +  4 );
+            uint32_t addr_key  = get_be16( ptr +  8 );
+            uint8_t  xor_key   =        *( ptr + 10 );
             qsound_set_kabuki_key( info->emu, swap_key1, swap_key2, addr_key, xor_key );
         } else {
             qsound_set_kabuki_key( info->emu, 0, 0, 0, 0 );
