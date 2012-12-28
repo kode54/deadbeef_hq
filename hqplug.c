@@ -47,6 +47,28 @@ static DB_functions_t *deadbeef;
 
 #define BORK_TIME 0xC0CAC01A
 
+inline unsigned get_be16( void const* p )
+{
+    return  (unsigned) ((unsigned char const*) p) [0] << 8 |
+            (unsigned) ((unsigned char const*) p) [1];
+}
+
+inline unsigned get_le32( void const* p )
+{
+    return  (unsigned) ((unsigned char const*) p) [3] << 24 |
+            (unsigned) ((unsigned char const*) p) [2] << 16 |
+            (unsigned) ((unsigned char const*) p) [1] <<  8 |
+            (unsigned) ((unsigned char const*) p) [0];
+}
+
+inline unsigned get_be32( void const* p )
+{
+    return  (unsigned) ((unsigned char const*) p) [0] << 24 |
+            (unsigned) ((unsigned char const*) p) [1] << 16 |
+            (unsigned) ((unsigned char const*) p) [2] <<  8 |
+            (unsigned) ((unsigned char const*) p) [3];
+}
+
 static unsigned long parse_time_crap(const char *input)
 {
     if (!input) return BORK_TIME;
@@ -260,6 +282,7 @@ static int upload_section( struct psf_load_state * state, const char * section, 
 
     if ( new_size > old_size ) {
         *array = realloc( *array, new_size );
+        *array_size = new_size;
         memset( *array + old_size, 0, new_size - old_size );
     }
 
@@ -278,8 +301,8 @@ int qsf_load(void * context, const uint8_t * exe, size_t exe_size,
         if ( exe_size < 11 ) break;
         memcpy( s, exe, 3 ); exe += 3; exe_size -= 3;
         s [3] = 0;
-        uint32_t dataofs  = *(uint32_t*)exe; exe += 4; exe_size -= 4;
-        uint32_t datasize = *(uint32_t*)exe; exe += 4; exe_size -= 4;
+        uint32_t dataofs  = get_le32( exe ); exe += 4; exe_size -= 4;
+        uint32_t datasize = get_le32( exe ); exe += 4; exe_size -= 4;
         if ( datasize > exe_size )
             return -1;
 
@@ -395,10 +418,10 @@ hq_init (DB_fileinfo_t *_info, DB_playItem_t *it) {
 
     if(state.key_size == 11) {
         uint8_t * ptr = state.key;
-        uint32_t swap_key1 = *( uint32_t * )( ptr +  0 );
-        uint32_t swap_key2 = *( uint32_t * )( ptr +  4 );
-        uint32_t addr_key  = *( uint16_t * )( ptr +  8 );
-        uint8_t  xor_key   =               *( ptr + 10 );
+        uint32_t swap_key1 = get_be32( ptr +  0 );
+        uint32_t swap_key2 = get_be32( ptr +  4 );
+        uint32_t addr_key  = get_be16( ptr +  8 );
+        uint8_t  xor_key   =        *( ptr + 10 );
         qsound_set_kabuki_key( info->emu, swap_key1, swap_key2, addr_key, xor_key );
     } else {
         qsound_set_kabuki_key( info->emu, 0, 0, 0, 0 );
