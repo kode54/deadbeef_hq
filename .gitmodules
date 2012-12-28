@@ -1,0 +1,6 @@
+[submodule "QSoundCore"]
+	path = QSoundCore
+	url = git@github.com:kode54/Highly_Quixotic.git
+[submodule "psflib"]
+	path = psflib
+	url = git@github.com:kode54/psflib.git
