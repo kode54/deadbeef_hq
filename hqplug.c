@@ -642,7 +642,7 @@ hq_insert (ddb_playlist_t *plt, DB_playItem_t *after, const char *fname) {
     free_tags( state.tags );
 
     deadbeef->plt_set_item_duration (plt, it, (float)(tag_song_ms + tag_fade_ms) / 1000.f);
-    deadbeef->pl_add_meta (it, ":FILETYPE", psf_version == 2 ? "PSF2" : "PSF");
+    deadbeef->pl_add_meta (it, ":FILETYPE", "QSF");
     after = deadbeef->plt_insert_item (plt, after, it);
     deadbeef->pl_item_unref (it);
     return after;
